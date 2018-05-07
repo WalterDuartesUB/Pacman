@@ -1,5 +1,6 @@
-package ar.edu.ub.programacion3.pacman;
+package test.ar.edu.ub.programacion3.pacman;
 
+import ar.edu.ub.programacion3.pacman.Maze;
 import junit.framework.TestCase;
 
 public class TestMaze extends TestCase

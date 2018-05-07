@@ -39,6 +39,8 @@ public class Maze
 	
 	private PacmanLooking pacmanLooking;
 	
+	private Pacman pacman;
+	
 	///////////////////////////////////////////////////////////////////////////
 	//
 	
@@ -46,8 +48,11 @@ public class Maze
 	{
 		this.setRows( getMazeDefaultRows() );
 		this.setColumns( getMazeDefaultColumns() );
+		
 		this.setActualColumn(getPacmanDefaultInitialColumn() );
 		this.setActualRow( getPacmanDefaultInitialRow() );
+		
+		this.setPacman( new Pacman() );
 		
 		this.initializeMaze();		
 	}
@@ -65,11 +70,13 @@ public class Maze
 
 	private void updatePacmanDraw()
 	{
-		this.getMaze()[this.getActualRow()][this.getActualColumn()] = this.getPacmanDraw();		
+		this.getMaze()[this.getActualRow()][this.getActualColumn()] = this.getPacmanRepresentation();		
 	}
 
-	private String getPacmanDraw()
-	{		
+	private String getPacmanRepresentation()
+	{	
+		return this.getPacman().getRepresentation();
+		/*
 		if( this.isPacManLookingDown() )
 			return MAZE_POSITION_PACMAN_DOWN;
 		
@@ -80,6 +87,7 @@ public class Maze
 			return MAZE_POSITION_PACMAN_LEFT;
 				
 		return MAZE_POSITION_PACMAN_RIGHT;
+		*/
 	}
 
 	public int getRows()
@@ -127,47 +135,55 @@ public class Maze
 	
 	private boolean isPacman(String mazePosition )
 	{
-		return  mazePosition == this.getPacmanDraw();
+		return  mazePosition == this.getPacmanRepresentation();
 	}
 
 	public boolean isPacManLookingDown()
 	{
-		return this.getPacmanLooking() == PacmanLooking.PACMAN_DOWN;
+		return this.getPacman().isPacManLookingDown();
+//		return this.getPacmanLooking() == PacmanLooking.PACMAN_DOWN;
 	}
 	
 	public boolean isPacManLookingUp()
 	{
-		return this.getPacmanLooking() == PacmanLooking.PACMAN_UP;
+		return this.getPacman().isPacManLookingUp();
+//		return this.getPacmanLooking() == PacmanLooking.PACMAN_UP;
 	}
 	
 	public boolean isPacManLookingLeft()
 	{
-		return this.getPacmanLooking() == PacmanLooking.PACMAN_LEFT;
+		return this.getPacman().isPacManLookingLeft();
+//		return this.getPacmanLooking() == PacmanLooking.PACMAN_LEFT;
 	}
 	
 	public boolean isPacManLookingRight()
 	{
-		return this.getPacmanLooking() == PacmanLooking.PACMAN_RIGHT;
+		return this.getPacman().isPacManLookingRight();
+//		return this.getPacmanLooking() == PacmanLooking.PACMAN_RIGHT;
 	}
 	
 	public void pacManDown()
 	{
-		this.setPacmanLooking( PacmanLooking.PACMAN_DOWN );
+		this.getPacman().pacManDown();
+//		this.setPacmanLooking( PacmanLooking.PACMAN_DOWN );
 	}	
 	
 	public void pacManUp()
 	{
-		this.setPacmanLooking( PacmanLooking.PACMAN_UP );
+		this.getPacman().pacManUp();
+//		this.setPacmanLooking( PacmanLooking.PACMAN_UP );
 	}	
 	
 	public void pacManLeft()
 	{
-		this.setPacmanLooking( PacmanLooking.PACMAN_LEFT );
+		this.getPacman().pacManLeft();
+//		this.setPacmanLooking( PacmanLooking.PACMAN_LEFT );
 	}	
 	
 	public void pacManRight()
 	{
-		this.setPacmanLooking( PacmanLooking.PACMAN_RIGHT );
+		this.getPacman().pacManRight();
+//		this.setPacmanLooking( PacmanLooking.PACMAN_RIGHT );
 	}	
 	
 	public void tick()
@@ -282,6 +298,14 @@ public class Maze
 	public static int getMazeDefaultRows()
 	{
 		return MAZE_DEFAULT_ROWS;
+	}
+
+	private Pacman getPacman() {
+		return pacman;
+	}
+
+	private void setPacman(Pacman pacman) {
+		this.pacman = pacman;
 	}
 
 }
