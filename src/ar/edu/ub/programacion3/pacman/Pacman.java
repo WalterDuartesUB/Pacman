@@ -2,16 +2,22 @@ package ar.edu.ub.programacion3.pacman;
 
 public class Pacman {
 	private PacmanLooking looking;
-
-	public Pacman(PacmanLooking looking) {
+	private Coordinates coordinates;
+	
+	public Pacman(PacmanLooking looking, Coordinates coordinates) {
 		this.setPacmanLooking( looking );
+		this.setCoordinates(coordinates);
 	}
 
 	public Pacman() {
-		this( PacmanLooking.UP );
+		this( PacmanLooking.UP, new Coordinates( 2, 2 ) );
 		
 	}
 	
+	public Pacman(Coordinates coordinates) { 
+		this( PacmanLooking.UP, coordinates );
+	}
+
 	private PacmanLooking getPacmanLooking() {
 		return looking;
 	}
@@ -62,5 +68,33 @@ public class Pacman {
 
 	public String getRepresentation() {
 		return this.getPacmanLooking().getRepresentation();
-	}		
+	}
+
+	private Coordinates getCoordinates() {	
+		return this.coordinates;
+	}
+
+	private void setCoordinates(Coordinates coordinates) {
+		this.coordinates = coordinates;
+	}
+
+	public int getRow() {
+		return this.getCoordinates().getRow();
+	}
+
+	public void setRow(int row) {
+		this.getCoordinates().setRow(row);
+	}
+	
+	public int getColumn() {
+		return this.getCoordinates().getColumn();
+	}
+
+	public void setColumn(int column) {
+		this.getCoordinates().setColumn(column);
+	}
+
+	public Coordinates getNextCoordinate() {
+		return this.getCoordinates().add( this.getPacmanLooking().getStep() );
+	}
 }

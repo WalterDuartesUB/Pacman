@@ -4,41 +4,17 @@ public class Maze
 {
 	private static final int MAZE_DEFAULT_ROWS = 5;
 	private static final int MAZE_DEFAULT_COLUMNS = 5;
-		
-	private static final String MAZE_POSITION_BALL = "*";
-	private static final String MAZE_POSITION_EMPTY = " ";
-	
-	private static final String MAZE_POSITION_PACMAN_UP = "^";
-	private static final String MAZE_POSITION_PACMAN_DOWN = "V";
-	private static final String MAZE_POSITION_PACMAN_LEFT = "<";
-	private static final String MAZE_POSITION_PACMAN_RIGHT = ">";
 	
 	private static final int PACMAN_DEFAULT_INITIAL_ROW = 2;
 	private static final int PACMAN_DEFAULT_INITIAL_COLUMN = 2;
-	
-	///////////////////////////////////////////////////////////////////////////
-	//
-	
-	private enum PacmanLooking{
-		PACMAN_UP,
-		PACMAN_DOWN,
-		PACMAN_LEFT,
-		PACMAN_RIGHT
-	};
-	
+
 	///////////////////////////////////////////////////////////////////////////
 	//
 	
 	private int rows;
 	private int columns;
 	
-	private int actualRow;
-	private int actualColumn;
-	
-	private String[][] maze;
-	
-	private PacmanLooking pacmanLooking;
-	
+	private String[][] maze;	
 	private Pacman pacman;
 	
 	///////////////////////////////////////////////////////////////////////////
@@ -47,12 +23,9 @@ public class Maze
 	public Maze()
 	{
 		this.setRows( getMazeDefaultRows() );
-		this.setColumns( getMazeDefaultColumns() );
+		this.setColumns( getMazeDefaultColumns() );		
 		
-		this.setActualColumn(getPacmanDefaultInitialColumn() );
-		this.setActualRow( getPacmanDefaultInitialRow() );
-		
-		this.setPacman( new Pacman() );
+		this.setPacman( new Pacman( new Coordinates( getPacmanDefaultInitialRow(), getPacmanDefaultInitialColumn() ) ) );
 		
 		this.initializeMaze();		
 	}
@@ -63,7 +36,7 @@ public class Maze
 		
 		for( int row = 0; row < this.getRows(); row++ )
 			for( int column = 0; column < this.getColumns(); column++ )
-				this.getMaze()[row][column] = MAZE_POSITION_BALL;
+				this.getMaze()[row][column] = MazeContent.BALL.getRepresentation();
 		
 		this.pacManUp();		
 	}
@@ -76,18 +49,6 @@ public class Maze
 	private String getPacmanRepresentation()
 	{	
 		return this.getPacman().getRepresentation();
-		/*
-		if( this.isPacManLookingDown() )
-			return MAZE_POSITION_PACMAN_DOWN;
-		
-		if( this.isPacManLookingUp() )
-			return MAZE_POSITION_PACMAN_UP;
-		
-		if( this.isPacManLookingLeft() )
-			return MAZE_POSITION_PACMAN_LEFT;
-				
-		return MAZE_POSITION_PACMAN_RIGHT;
-		*/
 	}
 
 	public int getRows()
@@ -109,10 +70,14 @@ public class Maze
 	
 	public boolean isEmptyAt(int row, int column )
 	{
-		if( !this.isValidRow( row  ) || !this.isValidColumn( column ) )
+		if( !isValidCoordinate(row, column) )
 			return false;
 		
-		return this.getMaze()[ row ][ column ] == MAZE_POSITION_EMPTY;
+		return this.getMaze()[ row ][ column ] == MazeContent.EMPTY.getRepresentation();
+	}
+
+	private boolean isValidCoordinate(int row, int column) {
+		return this.isValidRow( row  ) && this.isValidColumn( column );
 	}
 	
 	private boolean isValidColumn(int column)
@@ -127,7 +92,7 @@ public class Maze
 
 	public boolean isPacmanAt(int row, int column )
 	{
-		if( !this.isValidRow( row  ) || !this.isValidColumn( column ) )
+		if( !isValidCoordinate(row, column) )
 			return false;
 		
 		return this.isPacman( this.getMaze()[ row ][ column ] );
@@ -141,91 +106,80 @@ public class Maze
 	public boolean isPacManLookingDown()
 	{
 		return this.getPacman().isPacManLookingDown();
-//		return this.getPacmanLooking() == PacmanLooking.PACMAN_DOWN;
 	}
 	
 	public boolean isPacManLookingUp()
 	{
 		return this.getPacman().isPacManLookingUp();
-//		return this.getPacmanLooking() == PacmanLooking.PACMAN_UP;
 	}
 	
 	public boolean isPacManLookingLeft()
 	{
 		return this.getPacman().isPacManLookingLeft();
-//		return this.getPacmanLooking() == PacmanLooking.PACMAN_LEFT;
 	}
 	
 	public boolean isPacManLookingRight()
 	{
 		return this.getPacman().isPacManLookingRight();
-//		return this.getPacmanLooking() == PacmanLooking.PACMAN_RIGHT;
 	}
 	
 	public void pacManDown()
 	{
 		this.getPacman().pacManDown();
-//		this.setPacmanLooking( PacmanLooking.PACMAN_DOWN );
+		this.updatePacmanDraw();
 	}	
 	
 	public void pacManUp()
 	{
 		this.getPacman().pacManUp();
-//		this.setPacmanLooking( PacmanLooking.PACMAN_UP );
+		this.updatePacmanDraw();
 	}	
 	
 	public void pacManLeft()
 	{
 		this.getPacman().pacManLeft();
-//		this.setPacmanLooking( PacmanLooking.PACMAN_LEFT );
+		this.updatePacmanDraw();
 	}	
 	
 	public void pacManRight()
 	{
 		this.getPacman().pacManRight();
-//		this.setPacmanLooking( PacmanLooking.PACMAN_RIGHT );
+		this.updatePacmanDraw();
 	}	
 	
 	public void tick()
 	{
 		int oldRow = this.getActualRow();
 		int oldColumn = this.getActualColumn();
+
+		//Hago el step del pacman
+		this.setPacmanCoordinate( this.getValidCoordinate( this.getPacman().getNextCoordinate() ) );		
 		
-		if( this.isPacManLookingDown() )			
-			this.setActualRow( this.nextRow( oldRow ) );
-		
-		else if( this.isPacManLookingUp() )			
-			this.setActualRow( this.prevRow( oldRow ) );
-		
-		else if( this.isPacManLookingLeft() )			
-			this.setActualColumn( this.prevColumn( oldColumn ) );
-		
-		else if( this.isPacManLookingRight() )	
-			this.setActualColumn( this.nextColumn( oldColumn ) );
-			
+		//Hago el dibujo
 		this.updatePacmanDraw();
-		this.getMaze()[oldRow][oldColumn] = MAZE_POSITION_EMPTY;	
+		
+		//Reemplazo la posicion anterior por un blanco
+		this.getMaze()[oldRow][oldColumn] = MazeContent.EMPTY.getRepresentation();
 		
 	}
 	
-	private int prevColumn(int column)
-	{
-		return ( column == 0 ? this.getColumns() : column ) - 1;
+	private void setPacmanCoordinate(Coordinates validCoordinate) {
+		this.getPacman().setRow( validCoordinate.getRow() );
+		this.getPacman().setColumn( validCoordinate.getColumn() );		
+	}
+	
+	private int getValidCoordinate( int value, int maximum ){
+		return ( ( value % maximum ) + maximum ) % maximum;		
 	}
 
-	private int nextColumn(int column)
-	{
-		return ( column + 1 == this.getColumns() ? 0 : column + 1 );
-	}
-
-	private int prevRow(int row)
-	{
-		return ( row == 0 ? this.getRows() : row ) - 1;
-	}
-
-	private int nextRow(int row)
-	{
-		return ( row + 1 == this.getRows() ? 0 : row + 1 );
+	private Coordinates getValidCoordinate(Coordinates coordinate) {
+		
+		Coordinates validCoordinate = new Coordinates( coordinate );
+		
+		validCoordinate.setColumn( this.getValidCoordinate( validCoordinate.getColumn(), this.getColumns() ) ); 
+		validCoordinate.setRow( this.getValidCoordinate( validCoordinate.getRow(), this.getRows() ) ); 		
+		
+		return validCoordinate;
 	}
 
 	public void print()
@@ -241,22 +195,12 @@ public class Maze
 
 	private int getActualRow()
 	{
-		return actualRow;
-	}
-
-	private void setActualRow(int actualRow)
-	{
-		this.actualRow = actualRow;
+		return this.getPacman().getRow();
 	}
 
 	private int getActualColumn()
 	{
-		return actualColumn;
-	}
-
-	private void setActualColumn(int actualColumn)
-	{
-		this.actualColumn = actualColumn;
+		return this.getPacman().getColumn();
 	}
 
 	private String[][] getMaze()
@@ -267,17 +211,6 @@ public class Maze
 	private void setMaze(String[][] maze)
 	{
 		this.maze = maze;
-	}
-
-	private PacmanLooking getPacmanLooking()
-	{
-		return pacmanLooking;
-	}
-
-	private void setPacmanLooking(PacmanLooking pacmanLooking)
-	{
-		this.pacmanLooking = pacmanLooking;
-		this.updatePacmanDraw();
 	}
 
 	public static int getPacmanDefaultInitialRow()
